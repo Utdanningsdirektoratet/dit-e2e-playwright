@@ -1,0 +1,30 @@
+{
+  "name": "dit-e2e-playwright",
+  "version": "1.0.0",
+  "description": "End-to-end tests with Playwright for DIT applications",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "report": "playwright show-report",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@playwright/test": "^1.56.0",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "undici": "^7.22.0"
+  },
+  "lint-staged": {
+    "*.js": "eslint --fix"
+  },
+  "packageManager": "pnpm@10.25.0+sha512.5e82639027af37cf832061bcc6d639c219634488e0f2baebe785028a793de7b525ffcd3f7ff574f5e9860654e098fe852ba8ac5dd5cefe1767d23a020a92f501"
+}

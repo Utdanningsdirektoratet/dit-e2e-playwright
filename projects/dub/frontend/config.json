@@ -1,0 +1,27 @@
+{
+  "environments": {
+    "production": {
+      "baseURL": "https://dubestemmer.no",
+      "disabledHealthChecks": ["hreflang"]
+    },
+    "stage": {
+      "baseURL": "https://utda01mstra4y02inte.dxcloud.episerver.net",
+      "disabledHealthChecks": ["hreflang"]
+    },
+    "local": {
+      "baseURL": "https://localhost:44353",
+      "ignoreHTTPSErrors": true
+    }
+  },
+  "deviceFilter": ["desktop-chromium", "desktop-webkit", "mobile-chromium", "mobile-webkit"],
+  "sitemapExclude": [
+    "^/tema/$",
+    "^/tema/(mellomtrinn|ungdom)/$",
+    "^/larer/$",
+    "^/larer/(barn|ungdom)/$",
+    "^/(nn/)?foreldre_test/",
+    "^/(nn/)?foreldre2/",
+    "^/(nn/)?larer/foreldre/",
+    "^/(nn/)?foreldre/tema/"
+  ]
+}

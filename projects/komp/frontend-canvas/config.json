@@ -1,0 +1,20 @@
+{
+  "environments": {
+    "production": {
+      "baseURL": "https://bibsys.instructure.com",
+      "canvasBaseURL": "https://bibsys.instructure.com"
+    },
+    "stage": {
+      "baseURL": "https://bibsys.test.instructure.com",
+      "canvasBaseURL": "https://bibsys.test.instructure.com"
+    },
+    "local": {
+      "baseURL": "https://bibsys.test.instructure.com",
+      "canvasBaseURL": "https://bibsys.test.instructure.com"
+    }
+  },
+  "deviceFilter": ["desktop-chromium"],
+  "fullyParallel": false,
+  "retries": 1,
+  "timeout": 90000
+}
