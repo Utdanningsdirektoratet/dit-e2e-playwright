@@ -1,65 +1,60 @@
 /**
  * Console log patterns to ignore during testing.
- * Add regex patterns for known third-party noise as tests surface them.
  * Keep this list tight — overly broad patterns mask real issues.
  */
 export const CONSOLE_WHITELIST = [
-  /matomo/i,
-  // Azure Application Insights telemetry (Chromium) and its CORS error on WebKit.
-  // WebKit formats the pageerror as "<URL> due to access control checks" (no SDK name).
-  /application\s*insights/i,
-  /dc\.services\.visualstudio\.com/i,
-  /favicon\.ico/i,
-  /qbrick\.com/i,
-  // Subresource fetch failures (video embeds, CDN, staging server errors)
-  // NOTE: page-level HTTP status is checked separately via response.status()
-  /Failed to load resource/i,
-  // Uncaught Axios errors from failed background API calls (e.g. personalisation
-  // endpoints unavailable on specific pages). Not a page-load failure.
-  /AxiosError.*Network Error/i,
-  // GoBrain video player (Qbrick-based) CDN subtitle load failures and data
-  // module errors. These are third-party player internals, not app errors.
-  // The player logs two companion objects per failure: {body:, code:0} and
-  // {body:, code:0, error:XMLHttpRequestProgressEvent} as separate console.error calls.
-  /GoBrain\./i,
-  /^\{body: .*code: 0/,
-  /XMLHttpRequestProgressEvent/,
-  // Qbrick subtitle CDN (ip-only.net) — .srt/.vtt files fail on mobile WebKit
-  // due to TLS fingerprint rejection. WebKit surfaces these as pageerrors with
-  // "due to access control checks" and also emits a generic TLS failure message.
-  /ip-only\.net/i,
-  /A TLS error caused the secure connection to fail/i,
-  // WebKit network-level module load failure: the browser could not fetch a JS
-  // module script (CDN hiccup / TLS rejection). Not a JS logic error — the
-  // message is WebKit-specific and always indicates a resource fetch problem.
-  /Importing a module script failed/i,
-  // Vimeo CDN playlist fetch (HLS) failures on WebKit — access control issue
-  // between page origin and skyfire.vimeocdn.com. Embedded third-party video.
-  /vimeocdn/i,
-  // HLS.js "no available adapters" — video stream codec not supported by browser,
-  // or HLS stream unavailable. Common on pages with video embeds in headless env.
-  /No available adapters/i,
-  // CORS preflight failures from third-party CDNs (e.g. Qbrick returning 503 on OPTIONS).
-  // WebKit is more likely than Chromium to surface these as console errors.
-  /Preflight response is not successful/i,
-  /permissions policy violation/i,
-  // Cloudflare Turnstile noise (duplicate render, obfuscated JS errors, debug logs)
-  /cloudflare turnstile/i,
-  /charCodeAt/,
-  /font-size:0;color:transparent/,
-  // Cloudflare challenge platform injected into pages with bot-detection (e.g. Vimeo embeds).
-  // Surfaces as cross-frame access pageerrors and unused-preload warnings on mobile WebKit.
-  /challenges\.cloudflare\.com/i,
-  // CSP fallback notice (not a real error)
-  /default-src.*fallback/i,
-  // Browser engine noise (WebGPU/WebGL fallback in headless Chromium)
-  /WebGPU/i,
-  /WebGL/i,
-  // WebKit browser engine deprecation notice for window.styleMedia (not app code).
-  /window\.styleMedia/i,
-  // macOS/iOS WebKit CFNetwork error (kCFURLErrorCannotLoadFromNetwork = 303) —
-  // fired when embedded resources (iframes, video players) fail at the OS network
-  // layer in Safari. Same root cause as the AxiosError WebKit skip in 200-navigation:
-  // third-party resources behave differently in Safari's URL loading system.
-  /kCFErrorDomainCFNetwork/,
+  // ── Analytics & telemetry ─────────────────────────────────────────────────
+  /matomo/i, // Matomo tracking
+  /application\s*insights/i, // Azure Application Insights SDK
+  /dc\.services\.visualstudio\.com/i, // Azure AI telemetry endpoint
+
+  // ── Third-party video players ─────────────────────────────────────────────
+  /qbrick\.com/i, // Qbrick CDN
+  /GoBrain\./i, // GoBrain player internals
+  /^\{body: .*code: 0/, // GoBrain error payload object
+  /XMLHttpRequestProgressEvent/, // GoBrain XHR failure companion
+  /ip-only\.net/i, // Qbrick subtitle CDN (TLS failures on WebKit)
+  /vimeocdn/i, // Vimeo HLS playlist fetch failures
+  /No available adapters/i, // HLS.js codec not supported in headless
+
+  // ── Cloudflare ────────────────────────────────────────────────────────────
+  /cloudflare turnstile/i, // Turnstile widget noise
+  /charCodeAt/, // Obfuscated Turnstile JS error
+  /font-size:0;color:transparent/, // Turnstile debug render log
+  /challenges\.cloudflare\.com/i, // Challenge platform cross-frame errors
+
+  // ── Network & resource loading ────────────────────────────────────────────
+  /favicon\.ico/i, // Missing favicon
+  /Failed to load resource/i, // Generic subresource fetch failure
+  /AxiosError.*Network Error/i, // Background API call failure
+  /Preflight response is not successful/i, // CORS preflight rejection
+  /A TLS error caused the secure connection to fail/i, // TLS handshake failure
+
+  // ── CSP & permissions ─────────────────────────────────────────────────────
+  /default-src.*fallback/i, // CSP fallback notice
+  /permissions policy violation/i, // Iframe permissions policy
+
+  // ── Chromium-specific ─────────────────────────────────────────────────────
+  /WebGPU/i, // WebGPU fallback in headless
+  /WebGL/i, // WebGL fallback in headless
+
+  // ── WebKit-specific ───────────────────────────────────────────────────────
+  /Importing a module script failed/i, // Module fetch failure (CDN/TLS)
+  /window\.styleMedia/i, // Deprecated API notice
+  /kCFErrorDomainCFNetwork/, // macOS network layer error (code 303)
+
+  // ── Firefox-specific ──────────────────────────────────────────────────────
+  /downloadable font:.*download failed/i, // Intermittent font fetch failure
+  /downloadable font:.*no supported format/i, // FontAwesome format fallback
+  /Glyph bbox was incorrect/i, // FontAwesome bounding box warning
+  /Image corrupt or truncated/i, // Image decode race in headless
+  /Layout was forced before the page was fully loaded/i, // FOUC warning
+  /Feature Policy:.*Skipping unsupported feature/i, // Unsupported iframe attrs
+  /unreachable code after return statement/i, // Vimeo minified bundle warning
+  /NS_ERROR_ABORT/i, // Sporadic navigation abort
+  /NetworkError when attempting to fetch/i, // CDN timeout / TLS renegotiation
+  /classified as a bounce tracker/i, // Enhanced Tracking Protection noise
+  /jQuery is not defined/i, // Old pages with broken jQuery CDN deps
+  /\$ is not defined/i, // jQuery alias ($) missing after failed load
+  /Microsoft is not defined/i, // Legacy Microsoft JS SDK on old Optimizely pages
 ];

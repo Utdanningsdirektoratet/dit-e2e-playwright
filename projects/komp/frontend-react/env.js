@@ -4,6 +4,8 @@
  *
  * Exports: config, env, baseURL, sitemapUrl, insecure
  */
-import { createEnv } from '../../../shared/env.js';
+import { createEnv } from "../../../shared/env.js";
 
-export const { config, env, baseURL, sitemapUrl, insecure } = createEnv(import.meta.dirname);
+export const { config, env, baseURL, sitemapUrl, insecure } = createEnv(
+  import.meta.dirname,
+);

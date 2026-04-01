@@ -51,8 +51,8 @@
 /** @type {Platform[]} */
 const PLATFORMS = [
   {
-    name: 'qbrick',
-    category: 'video',
+    name: "qbrick",
+    category: "video",
     selector: 'iframe[src*="qbrick.com"]',
     // No public oEmbed API — check the embed URL directly; 4xx means removed.
     checkUrl: (src) => src,
@@ -73,9 +73,11 @@ const PLATFORMS = [
 
 /** @param {number} status */
 function statusReason(status) {
-  if (status === 401) return 'content is private or requires authentication';
-  if (status === 403) return 'access denied — content may be private or geo-restricted';
-  if (status === 404) return 'content removed, renamed, or URL has changed — link needs to be renewed';
+  if (status === 401) return "content is private or requires authentication";
+  if (status === 403)
+    return "access denied — content may be private or geo-restricted";
+  if (status === 404)
+    return "content removed, renamed, or URL has changed — link needs to be renewed";
   return `unexpected HTTP ${status}`;
 }
 
@@ -114,7 +116,7 @@ export async function detectEmbeds(page) {
     const count = await iframes.count();
 
     for (let i = 0; i < count; i++) {
-      const src = ((await iframes.nth(i).getAttribute('src')) ?? '').trim();
+      const src = ((await iframes.nth(i).getAttribute("src")) ?? "").trim();
       if (!src || seen.has(src)) continue;
       seen.add(src);
 
@@ -176,7 +178,9 @@ export async function checkEmbeds(page, { maxPerPlatform = Infinity } = {}) {
     const batchResults = await Promise.all(
       batch.map(async (embed) => {
         try {
-          const response = await page.request.get(embed.checkUrl, { timeout: 10_000 });
+          const response = await page.request.get(embed.checkUrl, {
+            timeout: 10_000,
+          });
           if (response.status() >= 400) {
             return {
               src: embed.src,
@@ -209,5 +213,5 @@ export function formatEmbedIssues(issues) {
   const lines = issues.map(({ platform, category, status, reason, src }) => {
     return `  [HTTP ${status}] ${category}/${platform}: ${reason}\n    ${src}`;
   });
-  return `Embed issues found:\n${lines.join('\n')}`;
+  return `Embed issues found:\n${lines.join("\n")}`;
 }

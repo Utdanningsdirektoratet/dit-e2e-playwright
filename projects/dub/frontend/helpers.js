@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 
 /**
  * Dismiss the cookie consent banner if it is visible.
@@ -10,10 +10,13 @@ import { expect } from '@playwright/test';
  * @param {import('@playwright/test').Page} page
  */
 export async function dismissCookieBanner(page) {
-  const cookieBtn = page.locator('.cookie-banner button');
+  const cookieBtn = page.locator(".cookie-banner button");
   const visible = await cookieBtn
-    .waitFor({ state: 'visible', timeout: 2000 })
-    .then(() => true, () => false);
+    .waitFor({ state: "visible", timeout: 2000 })
+    .then(
+      () => true,
+      () => false,
+    );
   if (visible) {
     await cookieBtn.click();
     await expect(cookieBtn).not.toBeVisible();

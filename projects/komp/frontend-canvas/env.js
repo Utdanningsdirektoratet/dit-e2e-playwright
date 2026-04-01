@@ -5,7 +5,7 @@
  * Exports: config, env, baseURL, canvasBaseURL
  * (canvasBaseURL is Canvas-specific — not in the shared factory)
  */
-import { createEnv } from '../../../shared/env.js';
+import { createEnv } from "../../../shared/env.js";
 
 const { config, env, baseURL } = createEnv(import.meta.dirname);
 export { config, env, baseURL };

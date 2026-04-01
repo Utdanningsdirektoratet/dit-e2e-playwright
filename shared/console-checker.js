@@ -16,14 +16,14 @@ export function createConsoleChecker(page, whitelist = []) {
     return whitelist.some((pattern) => pattern.test(text));
   }
 
-  page.on('console', (msg) => {
+  page.on("console", (msg) => {
     const text = msg.text();
     if (isWhitelisted(text)) return;
-    if (msg.type() === 'error') errors.push(text);
-    if (msg.type() === 'warning') warnings.push(text);
+    if (msg.type() === "error") errors.push(text);
+    if (msg.type() === "warning") warnings.push(text);
   });
 
-  page.on('pageerror', (err) => {
+  page.on("pageerror", (err) => {
     const text = err.message;
     if (isWhitelisted(text)) return;
     errors.push(`[pageerror] ${text}`);

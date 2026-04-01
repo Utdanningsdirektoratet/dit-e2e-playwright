@@ -28,11 +28,11 @@ export async function fetchSitemapPaths(sitemapUrl, options = {}) {
     process.env.http_proxy;
 
   if (proxyUrl) {
-    const { ProxyAgent } = await import('undici');
+    const { ProxyAgent } = await import("undici");
     fetchOptions.dispatcher = new ProxyAgent(proxyUrl);
   } else if (!rejectUnauthorized) {
     // Self-signed cert support (e.g. localhost dev server)
-    const { Agent } = await import('undici');
+    const { Agent } = await import("undici");
     fetchOptions.dispatcher = new Agent({
       connect: { rejectUnauthorized: false },
     });
@@ -41,7 +41,9 @@ export async function fetchSitemapPaths(sitemapUrl, options = {}) {
   async function fetchXml(url) {
     const res = await fetch(url, fetchOptions);
     if (!res.ok) {
-      throw new Error(`Sitemap fetch failed: ${res.status} ${res.statusText} — ${url}`);
+      throw new Error(
+        `Sitemap fetch failed: ${res.status} ${res.statusText} — ${url}`,
+      );
     }
     return res.text();
   }
@@ -50,8 +52,8 @@ export async function fetchSitemapPaths(sitemapUrl, options = {}) {
   // Decode &amp; entities — valid XML in URLs (e.g. ?foo=1&amp;bar=2) must be
   // decoded before passing to new URL(), otherwise the URL constructor throws.
   function extractLocs(xml) {
-    return [...xml.matchAll(/<(?:\w+:)?loc>([^<]+)<\/(?:\w+:)?loc>/g)].map((m) =>
-      m[1].replace(/&amp;/g, '&'),
+    return [...xml.matchAll(/<(?:\w+:)?loc>([^<]+)<\/(?:\w+:)?loc>/g)].map(
+      (m) => m[1].replace(/&amp;/g, "&"),
     );
   }
 
@@ -74,7 +76,9 @@ export async function fetchSitemapPaths(sitemapUrl, options = {}) {
       }
     }
 
-    await Promise.all(Array.from({ length: Math.min(concurrency, childUrls.length) }, worker));
+    await Promise.all(
+      Array.from({ length: Math.min(concurrency, childUrls.length) }, worker),
+    );
     return [...new Set(allPaths)];
   }
 

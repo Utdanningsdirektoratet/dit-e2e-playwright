@@ -3,28 +3,37 @@
  * Keep this list tight — overly broad patterns mask real issues.
  */
 export const CONSOLE_WHITELIST = [
-  // Analytics / telemetry
-  /matomo/i,
-  // Azure Application Insights
-  /application\s*insights/i,
-  /dc\.services\.visualstudio\.com/i,
-  // Common browser noise
-  /favicon\.ico/i,
-  // Subresource fetch failures from external CDNs
-  /Failed to load resource/i,
-  // CORS preflight failures from third-party CDNs
-  /Preflight response is not successful/i,
-  /permissions policy violation/i,
-  // Next.js development-only HMR noise
-  /\[HMR\]/i,
-  /\[Fast Refresh\]/i,
-  // Browser engine noise (WebGPU/WebGL fallback in headless Chromium)
-  /WebGPU/i,
-  /WebGL/i,
-  // Sentry initialization warnings in test environments
-  /\[Sentry\]/i,
-  // Next.js runtime config deprecation (fixed in app, harmless until Next.js 16)
-  /next\/config/i,
-  // SSL certificate errors during navigation (CDN/proxy TLS renegotiation)
-  /SSL certificate error/i,
+  // ── Analytics & telemetry ─────────────────────────────────────────────────
+  /matomo/i, // Matomo tracking
+  /application\s*insights/i, // Azure Application Insights SDK
+  /dc\.services\.visualstudio\.com/i, // Azure AI telemetry endpoint
+
+  // ── Network & resource loading ────────────────────────────────────────────
+  /favicon\.ico/i, // Missing favicon
+  /Failed to load resource/i, // Generic subresource fetch failure
+  /Preflight response is not successful/i, // CORS preflight rejection
+  /SSL certificate error/i, // CDN/proxy TLS renegotiation
+
+  // ── CSP & permissions ─────────────────────────────────────────────────────
+  /permissions policy violation/i, // Iframe permissions policy
+
+  // ── Next.js ───────────────────────────────────────────────────────────────
+  /\[HMR\]/i, // Dev-only HMR noise
+  /\[Fast Refresh\]/i, // Dev-only Fast Refresh noise
+  /next\/config/i, // Runtime config deprecation
+
+  // ── Sentry ────────────────────────────────────────────────────────────────
+  /\[Sentry\]/i, // Sentry init warnings in test environments
+
+  // ── Service worker (Serwist) ──────────────────────────────────────────────
+  /sw\.js/i, // SW registration/load failures (WebKit headless)
+  /A bad HTTP response code \(404\) was received when fetching the script/i, // SW script 404 on navigation (Chromium)
+
+  // ── Chromium-specific ─────────────────────────────────────────────────────
+  /WebGPU/i, // WebGPU fallback in headless
+  /WebGL/i, // WebGL fallback in headless
+
+  // ── Firefox-specific ──────────────────────────────────────────────────────
+  /NS_BINDING_ABORTED/i, // Playwright Juggler protocol abort
+  /juggler/i, // Playwright Firefox internals
 ];

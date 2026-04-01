@@ -1,14 +1,14 @@
-import { defineConfig, devices } from '@playwright/test';
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join } from 'path';
+import { defineConfig, devices } from "@playwright/test";
+import { readFileSync, readdirSync, existsSync } from "fs";
+import { join } from "path";
 
 // Load .env file if present (CI env vars take precedence)
-const envPath = join(import.meta.dirname, '.env');
+const envPath = join(import.meta.dirname, ".env");
 if (existsSync(envPath)) {
-  for (const line of readFileSync(envPath, 'utf-8').split('\n')) {
+  for (const line of readFileSync(envPath, "utf-8").split("\n")) {
     const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const eq = trimmed.indexOf('=');
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
     if (eq === -1) continue;
     const key = trimmed.slice(0, eq);
     const value = trimmed.slice(eq + 1);
@@ -37,15 +37,31 @@ if (existsSync(envPath)) {
 
 const DEVICES = [
   // Desktop — full browser matrix
-  { device: 'desktop', browser: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  { device: 'desktop', browser: 'firefox', use: { ...devices['Desktop Firefox'] } },
-  { device: 'desktop', browser: 'webkit', use: { ...devices['Desktop Safari'] } },
+  {
+    device: "desktop",
+    browser: "chromium",
+    use: { ...devices["Desktop Chrome"] },
+  },
+  {
+    device: "desktop",
+    browser: "firefox",
+    use: { ...devices["Desktop Firefox"] },
+  },
+  {
+    device: "desktop",
+    browser: "webkit",
+    use: { ...devices["Desktop Safari"] },
+  },
   // Mobile — most popular devices per engine
-  { device: 'mobile', browser: 'chromium', use: { ...devices['Pixel 7'] } },
-  { device: 'mobile', browser: 'webkit', use: { ...devices['iPhone 15'] } },
+  { device: "mobile", browser: "chromium", use: { ...devices["Pixel 7"] } },
+  { device: "mobile", browser: "webkit", use: { ...devices["iPhone 15"] } },
   // Tablet — most popular devices per engine
-  { device: 'tablet', browser: 'chromium', use: { ...devices['Galaxy Tab S4'] } },
-  { device: 'tablet', browser: 'webkit', use: { ...devices['iPad (gen 7)'] } },
+  {
+    device: "tablet",
+    browser: "chromium",
+    use: { ...devices["Galaxy Tab S4"] },
+  },
+  { device: "tablet", browser: "webkit", use: { ...devices["iPad (gen 7)"] } },
 ];
 
 /*
@@ -54,8 +70,11 @@ const DEVICES = [
  * The proxy URL may include credentials (http://user:pass@host:port).
  */
 function detectProxy() {
-  const raw = process.env.HTTPS_PROXY || process.env.https_proxy
-    || process.env.HTTP_PROXY || process.env.http_proxy;
+  const raw =
+    process.env.HTTPS_PROXY ||
+    process.env.https_proxy ||
+    process.env.HTTP_PROXY ||
+    process.env.http_proxy;
   if (!raw) return undefined;
   try {
     const url = new URL(raw);
@@ -82,7 +101,7 @@ function dirs(path) {
 
 function loadJson(path) {
   if (!existsSync(path)) return {};
-  return JSON.parse(readFileSync(path, 'utf-8'));
+  return JSON.parse(readFileSync(path, "utf-8"));
 }
 
 /*
@@ -104,24 +123,31 @@ function loadJson(path) {
 function resolveConfig(raw) {
   if (raw.environments) {
     // Normalise APP_ENV: "development" is an alias for "local"
-    let envName = process.env.APP_ENV || 'production';
-    if (envName === 'development') envName = 'local';
+    let envName = process.env.APP_ENV || "production";
+    if (envName === "development") envName = "local";
 
     const env = raw.environments[envName];
     if (!env) {
-      const available = Object.keys(raw.environments).join(', ');
-      throw new Error(`Unknown APP_ENV="${process.env.APP_ENV}". Available: ${available}`);
+      const available = Object.keys(raw.environments).join(", ");
+      throw new Error(
+        `Unknown APP_ENV="${process.env.APP_ENV}". Available: ${available}`,
+      );
     }
 
     // sitemapUrl is consumed by spec files, not by Playwright config — strip it here
-    const { baseURL, ignoreHTTPSErrors, sitemapUrl: _sitemapUrl, ...envRest } = env;
+    const {
+      baseURL,
+      ignoreHTTPSErrors,
+      sitemapUrl: _sitemapUrl,
+      ...envRest
+    } = env;
 
     // Strip meta fields that are not Playwright project options
     const { environments: _e, deviceFilter: _d, ...playwrightOptions } = raw;
 
     return {
       ...playwrightOptions, // fullyParallel, retries, timeout, expect, …
-      ...envRest,           // env-specific extras (e.g. canvasBaseURL)
+      ...envRest, // env-specific extras (e.g. canvasBaseURL)
       use: { baseURL },
       ...(ignoreHTTPSErrors ? { _ignoreHTTPSErrors: true } : {}),
     };
@@ -131,7 +157,7 @@ function resolveConfig(raw) {
 }
 
 function discoverProjects() {
-  const projectsDir = join(import.meta.dirname, 'projects');
+  const projectsDir = join(import.meta.dirname, "projects");
   const result = [];
 
   if (!existsSync(projectsDir)) return result;
@@ -141,7 +167,7 @@ function discoverProjects() {
       const testDir = join(projectsDir, code, service);
 
       // Optional per-project overrides from config.json
-      const raw = loadJson(join(testDir, 'config.json'));
+      const raw = loadJson(join(testDir, "config.json"));
       const resolved = resolveConfig(raw);
       const { use: useOverrides, _ignoreHTTPSErrors, ...overrides } = resolved;
 
@@ -152,7 +178,9 @@ function discoverProjects() {
       // Set "deviceFilter": ["desktop-chromium", "mobile-webkit"] in config.json.
       const deviceFilter = raw.deviceFilter;
       const activeDevices = deviceFilter
-        ? DEVICES.filter((d) => deviceFilter.includes(`${d.device}-${d.browser}`))
+        ? DEVICES.filter((d) =>
+            deviceFilter.includes(`${d.device}-${d.browser}`),
+          )
         : DEVICES;
 
       for (const entry of activeDevices) {
@@ -175,22 +203,25 @@ function discoverProjects() {
 }
 
 export default defineConfig({
-  testMatch: '**/*.spec.js',
+  testMatch: "**/*.spec.js",
   timeout: 60_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 1,
-  workers: 6,
+  workers: 9,
   reporter: process.env.CI
-    ? [['html', { open: 'never' }], ['json', { outputFile: 'results/results.json' }]]
-    : [['html', { open: 'on-failure' }]],
-  outputDir: 'results/artifacts',
+    ? [
+        ["html", { open: "never" }],
+        ["json", { outputFile: "results/results.json" }],
+      ]
+    : [["html", { open: "on-failure" }]],
+  outputDir: "results/artifacts",
 
   use: {
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
 
   projects: discoverProjects(),

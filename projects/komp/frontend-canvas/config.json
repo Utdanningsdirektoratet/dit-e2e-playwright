@@ -14,7 +14,8 @@
     }
   },
   "deviceFilter": ["desktop-chromium"],
-  "fullyParallel": false,
+  "fullyParallel": true,
   "retries": 1,
+  "workers": 4,
   "timeout": 90000
 }

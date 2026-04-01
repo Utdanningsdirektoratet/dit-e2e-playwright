@@ -10,27 +10,25 @@
  * Env vars (set in .env or CI secrets):
  *   KOMP_CANVAS_CHROMIUM_USERNAME / KOMP_CANVAS_CHROMIUM_PASSWORD
  *
- * The Canvas login/logout form interactions are handled by the shared module:
  * @see shared/canvas/auth.js
  */
-import { expect } from '@playwright/test';
-import { canvasBaseURL } from './env.js';
-import { loginCanvasForm, logoutCanvas } from '../../../shared/canvas/auth.js';
+import { expect } from "@playwright/test";
+import { canvasBaseURL } from "./env.js";
+import { loginCanvasForm, logoutCanvas } from "../../../shared/canvas/auth.js";
 
 function resolveCredentials() {
   return {
-    username: process.env.KOMP_CANVAS_CHROMIUM_USERNAME ?? '',
-    password: process.env.KOMP_CANVAS_CHROMIUM_PASSWORD ?? '',
+    username: process.env.KOMP_CANVAS_CHROMIUM_USERNAME ?? "",
+    password: process.env.KOMP_CANVAS_CHROMIUM_PASSWORD ?? "",
   };
 }
 
 /**
  * Returns true when credentials are configured.
- * Spec files use this to skip auth-dependent tests gracefully.
  */
 export function hasCredentials() {
   const { username, password } = resolveCredentials();
-  return username !== '' && password !== '';
+  return username !== "" && password !== "";
 }
 
 /**
@@ -39,14 +37,32 @@ export function hasCredentials() {
  */
 export async function loginWithBasicAuth(page) {
   const { username, password } = resolveCredentials();
-  expect(username, 'KOMP_CANVAS_*_USERNAME env var is not set').not.toBe('');
-  expect(password, 'KOMP_CANVAS_*_PASSWORD env var is not set').not.toBe('');
-  await loginCanvasForm(page, canvasBaseURL, username, password, '/login/canvas?normalLogin=1&design=udir');
-  // Confirm login in the UDIR context — navigate to the frontpage and wait for the header
-  await page.goto(`${canvasBaseURL}/search/all_courses?design=udir`);
+  expect(username, "KOMP_CANVAS_*_USERNAME env var is not set").not.toBe("");
+  expect(password, "KOMP_CANVAS_*_PASSWORD env var is not set").not.toBe("");
+  await loginCanvasForm(
+    page,
+    canvasBaseURL,
+    username,
+    password,
+    "/login/canvas?normalLogin=1&design=udir",
+  );
+
+  // Wait for Canvas post-login redirects to settle before navigating again.
+  // Without this, the next page.goto aborts the in-flight redirect (ERR_ABORTED).
+  await page.waitForLoadState("domcontentloaded");
+
+  // Confirm login in the UDIR context — retry once on ERR_ABORTED since Canvas
+  // staging can still be processing redirects after the initial settle.
+  const confirmUrl = `${canvasBaseURL}/search/all_courses?design=udir`;
+  try {
+    await page.goto(confirmUrl, { waitUntil: "domcontentloaded" });
+  } catch {
+    await page.waitForTimeout(2_000);
+    await page.goto(confirmUrl, { waitUntil: "domcontentloaded" });
+  }
   await page
-    .locator('.header__link', { hasText: 'Logg ut' })
-    .waitFor({ state: 'visible', timeout: 30_000 });
+    .locator(".header__link", { hasText: "Logg ut" })
+    .waitFor({ state: "visible", timeout: 5_000 });
 }
 
 export async function logout(page) {

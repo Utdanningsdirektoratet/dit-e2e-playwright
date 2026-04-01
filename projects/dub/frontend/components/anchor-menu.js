@@ -12,11 +12,11 @@
  * toggle — heading buttons are not rendered, so detect() returns false.
  */
 /* global document */
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 
-const HEADING_BUTTON = 'button.anchor-title-container';
-const COPY_MODAL = '#copy-modal';
-const COPY_INPUT = '#modal-autoselect';
+const HEADING_BUTTON = "button.anchor-title-container";
+const COPY_MODAL = "#copy-modal";
+const COPY_INPUT = "#modal-autoselect";
 
 export async function detect(page) {
   // Only detect when heading buttons exist (desktop); on mobile the anchor
@@ -37,7 +37,7 @@ export async function test(page) {
 
   // Close modal via JS (close button has aria-hidden="true")
   await page.evaluate(() => {
-    document.querySelector('#close-copy-modal')?.click();
+    document.querySelector("#close-copy-modal")?.click();
   });
   await expect(page.locator(COPY_MODAL).first()).not.toBeVisible();
 }

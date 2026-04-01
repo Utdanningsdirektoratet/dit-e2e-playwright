@@ -12,32 +12,32 @@
  * Both console.error and console.warn are asserted — warnings often
  * precede errors in the next release.
  */
-import { test, expect } from '@playwright/test';
-import { createConsoleChecker } from '../../../shared/console-checker.js';
-import { CONSOLE_WHITELIST } from './console-whitelist.js';
+import { test, expect } from "@playwright/test";
+import { createConsoleChecker } from "../../../shared/console-checker.js";
+import { CONSOLE_WHITELIST } from "./console-whitelist.js";
 
 // ── 1. Key pages in isolation ─────────────────────────────────────────────────
 
 const KEY_PAGES = [
-  ['homepage (bokmål)', '/'],
-  ['homepage (nynorsk)', '/nn/'],
-  ['about page', '/om-kompetanseportalen/'],
-  ['contact page', '/kontakt/'],
-  ['privacy page', '/personvern/'],
+  ["homepage (bokmål)", "/"],
+  ["homepage (nynorsk)", "/nn/"],
+  ["about page", "/om-kompetanseportalen/"],
+  ["contact page", "/kontakt/"],
+  ["privacy page", "/personvern/"],
 ];
 
-test.describe('Console — Pages', () => {
+test.describe("Console — Pages", () => {
   for (const [label, path] of KEY_PAGES) {
     test(`no console errors or warnings on ${label}`, async ({ page }) => {
       const checker = createConsoleChecker(page, CONSOLE_WHITELIST);
       await page.goto(path);
       expect(
         checker.errors,
-        `Console errors on ${path}:\n${checker.errors.join('\n')}`,
+        `Console errors on ${path}:\n${checker.errors.join("\n")}`,
       ).toEqual([]);
       expect(
         checker.warnings,
-        `Console warnings on ${path}:\n${checker.warnings.join('\n')}`,
+        `Console warnings on ${path}:\n${checker.warnings.join("\n")}`,
       ).toEqual([]);
     });
   }
@@ -45,23 +45,28 @@ test.describe('Console — Pages', () => {
 
 // ── 2. Interaction-based checks ───────────────────────────────────────────────
 
-test.describe('Console — Interactions', () => {
-  test('language switch bokmål → nynorsk produces no console errors', async ({ page }) => {
+test.describe("Console — Interactions", () => {
+  test("language switch bokmål → nynorsk produces no console errors", async ({
+    page,
+  }) => {
     const checker = createConsoleChecker(page, CONSOLE_WHITELIST);
-    await page.goto('/');
+    await page.goto("/");
 
     const errsBefore = checker.errors.length;
     const warnsBefore = checker.warnings.length;
 
-    await page.goto('/nn/');
-    await expect(page.locator('html')).toHaveAttribute('lang', 'nn');
+    await page.goto("/nn/");
+    await expect(page.locator("html")).toHaveAttribute("lang", "nn");
 
     const newErrors = checker.errors.slice(errsBefore);
     const newWarnings = checker.warnings.slice(warnsBefore);
-    expect(newErrors, `Console errors after language switch:\n${newErrors.join('\n')}`).toEqual([]);
+    expect(
+      newErrors,
+      `Console errors after language switch:\n${newErrors.join("\n")}`,
+    ).toEqual([]);
     expect(
       newWarnings,
-      `Console warnings after language switch:\n${newWarnings.join('\n')}`,
+      `Console warnings after language switch:\n${newWarnings.join("\n")}`,
     ).toEqual([]);
   });
 });

@@ -17,19 +17,21 @@
  * @param {string} dirname  Directory containing config.json — pass import.meta.dirname
  * @returns {{ config: object, env: object, baseURL: string, sitemapUrl: string, insecure: boolean }}
  */
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export function createEnv(dirname) {
-  const config = JSON.parse(readFileSync(join(dirname, 'config.json'), 'utf-8'));
+  const config = JSON.parse(
+    readFileSync(join(dirname, "config.json"), "utf-8"),
+  );
 
-  let envName = process.env.APP_ENV || 'production';
-  if (envName === 'development') envName = 'local';
+  let envName = process.env.APP_ENV || "production";
+  if (envName === "development") envName = "local";
 
   const env = config.environments[envName];
   if (!env) {
     throw new Error(
-      `Unknown APP_ENV="${process.env.APP_ENV}". Available: ${Object.keys(config.environments).join(', ')}`,
+      `Unknown APP_ENV="${process.env.APP_ENV}". Available: ${Object.keys(config.environments).join(", ")}`,
     );
   }
 

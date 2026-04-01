@@ -4,7 +4,7 @@
  * Each slider has .slider-previous-arrow / .slider-next-arrow nav buttons
  * and .page-numbers-wrapper pagination.
  */
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 
 export const SELECTOR = '[id^="main-slider-"]';
 
@@ -25,7 +25,7 @@ export async function test(page) {
     await expect(slider).not.toBeEmpty();
 
     if (!testedNav) {
-      const nextBtn = slider.locator('.slider-next-arrow');
+      const nextBtn = slider.locator(".slider-next-arrow");
       if ((await nextBtn.count()) > 0 && (await nextBtn.isVisible())) {
         await nextBtn.click();
         await expect(slider).not.toBeEmpty();

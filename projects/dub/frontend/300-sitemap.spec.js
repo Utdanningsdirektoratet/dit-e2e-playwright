@@ -21,24 +21,24 @@
  * Large groups (> SITEMAP_FULL_THRESHOLD pages) test a random subset each run;
  * small groups always run in full. Coverage accumulates over many runs by chance.
  */
-import { test, expect } from '@playwright/test';
-import { fetchSitemapPaths } from '../../../shared/sitemap.js';
-import { randomSample } from '../../../shared/sampling.js';
-import { createConsoleChecker } from '../../../shared/console-checker.js';
+import { test, expect } from "@playwright/test";
+import { fetchSitemapPaths } from "../../../shared/sitemap.js";
+import { randomSample } from "../../../shared/sampling.js";
+import { createConsoleChecker } from "../../../shared/console-checker.js";
 import {
   extractInternalLinks,
   checkLinks,
   formatBrokenLinks,
-} from '../../../shared/check-links.js';
-import { CONSOLE_WHITELIST } from './console-whitelist.js';
-import { getRequiredComponents } from './page-requirements.js';
-import { config, sitemapUrl, insecure } from './env.js';
-import * as slider from './components/slider.js';
-import * as filter from './components/filter.js';
-import * as accordion from './components/accordion.js';
-import * as anchorMenu from './components/anchor-menu.js';
-import * as embeddedContent from './components/embedded-content.js';
-import * as teacherGuidance from './components/teacher-guidance.js';
+} from "../../../shared/check-links.js";
+import { CONSOLE_WHITELIST } from "./console-whitelist.js";
+import { getRequiredComponents } from "./page-requirements.js";
+import { config, sitemapUrl, insecure } from "./env.js";
+import * as slider from "./components/slider.js";
+import * as filter from "./components/filter.js";
+import * as accordion from "./components/accordion.js";
+import * as anchorMenu from "./components/anchor-menu.js";
+import * as embeddedContent from "./components/embedded-content.js";
+import * as teacherGuidance from "./components/teacher-guidance.js";
 // To add coverage for a new component: create components/<name>.js with
 // detect(page) and test(page) exports, then add it to COMPONENTS below.
 
@@ -48,14 +48,21 @@ const excludePatterns = (config.sitemapExclude || []).map((p) => new RegExp(p));
 // Groups at or below this size run in full. Larger groups test a random subset.
 const SITEMAP_FULL_THRESHOLD = 8;
 
-const COMPONENTS = { slider, filter, accordion, anchorMenu, embeddedContent, teacherGuidance };
+const COMPONENTS = {
+  slider,
+  filter,
+  accordion,
+  anchorMenu,
+  embeddedContent,
+  teacherGuidance,
+};
 
 // Override labels only where auto-capitalization produces the wrong result
 // (Norwegian æ/ø/å characters). Everything else capitalizes automatically —
 // new URL segments appear in the dashboard without any code changes here.
 const SEGMENT_LABELS = {
-  larer: 'Lærer',
-  personvernerklaring: 'Personvernerklæring',
+  larer: "Lærer",
+  personvernerklaring: "Personvernerklæring",
 };
 
 function labelForSegment(seg) {
@@ -78,11 +85,11 @@ function labelForSegment(seg) {
 function groupByParentSegment(paths) {
   const groups = new Map();
   for (const path of paths) {
-    const normalized = path.replace(/^\/nn\//, '/');
-    const segments = normalized.split('/').filter(Boolean);
+    const normalized = path.replace(/^\/nn\//, "/");
+    const segments = normalized.split("/").filter(Boolean);
     let segment;
     if (segments.length === 0) {
-      segment = 'home';
+      segment = "home";
     } else if (segments.length === 1) {
       segment = segments[0];
     } else {
@@ -103,22 +110,24 @@ let paths;
 let fetchError;
 
 try {
-  const allPaths = await fetchSitemapPaths(sitemapUrl, { rejectUnauthorized: !insecure });
+  const allPaths = await fetchSitemapPaths(sitemapUrl, {
+    rejectUnauthorized: !insecure,
+  });
   paths = allPaths.filter((p) => !excludePatterns.some((re) => re.test(p)));
 } catch (err) {
   fetchError = err;
 }
 
 if (fetchError) {
-  test('sitemap fetch', () => {
+  test("sitemap fetch", () => {
     throw fetchError;
   });
 } else if (paths.length === 0) {
-  test('sitemap empty', () => {
+  test("sitemap empty", () => {
     throw new Error(`Sitemap at ${sitemapUrl} returned no URLs`);
   });
 } else {
-  test.describe('Sitemap Pages', () => {
+  test.describe("Sitemap Pages", () => {
     const groups = groupByParentSegment(paths);
 
     for (const [group, groupPaths] of groups) {
@@ -146,15 +155,22 @@ if (fetchError) {
             await test.step(path, async () => {
               // Use domcontentloaded so the goto doesn't block on slow/broken
               // external resources (e.g. video iframes) before returning.
-              const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
-              expect(response.status(), `HTTP ${response.status()}`).toBeLessThan(400);
+              const response = await page.goto(path, {
+                waitUntil: "domcontentloaded",
+              });
+              expect(
+                response.status(),
+                `HTTP ${response.status()}`,
+              ).toBeLessThan(400);
               await expect(page).toHaveTitle(/.+/);
 
               const required = getRequiredComponents(path);
               for (const [name, component] of Object.entries(COMPONENTS)) {
                 const found = await component.detect(page);
                 if (required.includes(name)) {
-                  expect(found, `Required component "${name}" missing`).toBe(true);
+                  expect(found, `Required component "${name}" missing`).toBe(
+                    true,
+                  );
                 }
                 if (found) {
                   await test.step(name, () => component.test(page));
@@ -162,7 +178,7 @@ if (fetchError) {
               }
 
               // Chromium only — HTTP-level check, browser engine is irrelevant
-              if (browserName === 'chromium') {
+              if (browserName === "chromium") {
                 const links = await extractInternalLinks(page);
                 const broken = await checkLinks(request, links);
                 expect(broken, formatBrokenLinks(broken)).toHaveLength(0);
@@ -170,21 +186,27 @@ if (fetchError) {
 
               const pageErrors = checker.errors.slice(errsBefore);
               const pageWarnings = checker.warnings.slice(warnsBefore);
-              expect(pageErrors, `Console errors:\n${pageErrors.join('\n')}`).toEqual([]);
-              expect(pageWarnings, `Console warnings:\n${pageWarnings.join('\n')}`).toEqual([]);
+              expect(
+                pageErrors,
+                `Console errors:\n${pageErrors.join("\n")}`,
+              ).toEqual([]);
+              expect(
+                pageWarnings,
+                `Console warnings:\n${pageWarnings.join("\n")}`,
+              ).toEqual([]);
             });
           } catch (err) {
             // Capture the failure and continue to the next page in this group.
             // Show up to 6 lines so console error messages are visible in the
             // summary (the first line is the label, e.g. "Console errors:").
-            const detail = err.message.split('\n').slice(0, 6).join('\n    ');
+            const detail = err.message.split("\n").slice(0, 6).join("\n    ");
             failures.push(`${path}\n    ${detail}`);
           }
         }
 
         if (failures.length > 0) {
           throw new Error(
-            `${failures.length} of ${pagesToTest.length} page(s) failed:\n\n  ${failures.join('\n\n  ')}`,
+            `${failures.length} of ${pagesToTest.length} page(s) failed:\n\n  ${failures.join("\n\n  ")}`,
           );
         }
       });

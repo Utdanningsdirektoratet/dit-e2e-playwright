@@ -32,13 +32,15 @@
  */
 export async function extractInternalLinks(page) {
   const hrefs = await page.evaluate(() => {
-    return [...document.querySelectorAll('a[href^="/"]')].map((a) => {
-      try {
-        return new URL(a.href).pathname;
-      } catch {
-        return null;
-      }
-    }).filter(Boolean);
+    return [...document.querySelectorAll('a[href^="/"]')]
+      .map((a) => {
+        try {
+          return new URL(a.href).pathname;
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
   });
   return [...new Set(hrefs)];
 }
@@ -64,7 +66,11 @@ export async function extractInternalLinks(page) {
  *   timeout     — per-request timeout in ms (default: 10_000)
  * @returns {Promise<BrokenLink[]>}
  */
-export async function checkLinks(request, links, { concurrency = 3, timeout = 10_000 } = {}) {
+export async function checkLinks(
+  request,
+  links,
+  { concurrency = 3, timeout = 10_000 } = {},
+) {
   const broken = [];
   const queue = [...links];
 
@@ -83,7 +89,9 @@ export async function checkLinks(request, links, { concurrency = 3, timeout = 10
     }
   }
 
-  await Promise.all(Array.from({ length: Math.min(concurrency, links.length) }, worker));
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, links.length) }, worker),
+  );
   return broken;
 }
 
@@ -95,5 +103,5 @@ export async function checkLinks(request, links, { concurrency = 3, timeout = 10
  */
 export function formatBrokenLinks(broken) {
   const lines = broken.map(({ status, link }) => `  [HTTP ${status}] ${link}`);
-  return `Broken internal links found:\n${lines.join('\n')}`;
+  return `Broken internal links found:\n${lines.join("\n")}`;
 }

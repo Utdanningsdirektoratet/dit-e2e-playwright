@@ -8,13 +8,16 @@
  * @see shared/canvas/stage-detection.js — isCanvasStage, assertCanvasStageStyling
  * @see shared/canvas/navigation.js     — assertCanvasHeaderAuthenticated/Unauthenticated
  */
-import { test } from '@playwright/test';
-import { canvasBaseURL } from './env.js';
-import { isCanvasStage, assertCanvasStageStyling } from '../../../shared/canvas/stage-detection.js';
+import { test } from "@playwright/test";
+import { canvasBaseURL } from "./env.js";
+import {
+  isCanvasStage,
+  assertCanvasStageStyling,
+} from "../../../shared/canvas/stage-detection.js";
 import {
   assertCanvasHeaderAuthenticated,
   assertCanvasHeaderUnauthenticated,
-} from '../../../shared/canvas/navigation.js';
+} from "../../../shared/canvas/navigation.js";
 
 /**
  * Injects the use_localhost_theme=true cookie so Canvas loads frontend assets
@@ -26,18 +29,18 @@ import {
  */
 export function useLocalTheme() {
   const isEnabled =
-    process.env.KOMP_CANVAS_LOCAL_THEME === 'true' ||
-    process.env.TEST_CANVAS_LOCAL_THEME === 'true';
+    process.env.KOMP_CANVAS_LOCAL_THEME === "true" ||
+    process.env.TEST_CANVAS_LOCAL_THEME === "true";
 
   if (isEnabled) {
     test.beforeEach(async ({ context }) => {
-      const cookieDomain = canvasBaseURL.replace(/^https?:\/\//, '');
+      const cookieDomain = canvasBaseURL.replace(/^https?:\/\//, "");
       await context.addCookies([
         {
-          name: 'use_localhost_theme',
-          value: 'true',
+          name: "use_localhost_theme",
+          value: "true",
           domain: cookieDomain,
-          path: '/',
+          path: "/",
         },
       ]);
     });
@@ -49,8 +52,8 @@ export function useLocalTheme() {
  * @returns {'stage' | 'production'}
  */
 export function getEnv() {
-  let env = process.env.APP_ENV ?? 'production';
-  if (env === 'local' || env === 'development') env = 'stage';
+  let env = process.env.APP_ENV ?? "production";
+  if (env === "local" || env === "development") env = "stage";
   return env;
 }
 
@@ -68,10 +71,10 @@ export function isStage() {
  * @param {import('@playwright/test').Locator} modalElement
  */
 export async function modalClose(modalElement) {
-  await modalElement.waitFor({ state: 'visible' });
-  const closeButton = modalElement.locator('button.icon-button');
-  await closeButton.click();
-  await modalElement.waitFor({ state: 'hidden' });
+  await modalElement.waitFor({ state: "visible", timeout: 10_000 });
+  const closeButton = modalElement.locator("button.icon-button");
+  await closeButton.click({ timeout: 10_000 });
+  await modalElement.waitFor({ state: "hidden", timeout: 10_000 });
 }
 
 /**
@@ -81,7 +84,7 @@ export async function modalClose(modalElement) {
  * @param {import('@playwright/test').Locator} header
  */
 export async function assertStageBanner(header) {
-  await header.waitFor({ state: 'visible' });
+  await header.waitFor({ state: "visible", timeout: 10_000 });
   await assertCanvasStageStyling(header, isCanvasStage(canvasBaseURL));
 }
 
@@ -103,31 +106,56 @@ export async function assertNavLinks(header, isLoggedIn) {
 /**
  * Open a module item in the left-side course tree and wait for its page to load.
  *
+ * Success timings: sidebar 5ms, toggle click 30ms, item click ~1s, title ~250ms.
+ * Timeouts are set tight to fail fast — retry re-queries the sidebar on the
+ * current page in case the first click triggered a navigation.
+ *
  * @param {import('@playwright/test').Page} page
  * @param {string} moduleName - e.g. "1. Innhold"
  * @param {string} moduleItemName - e.g. "1.2 Reveal"
  */
 export async function openModuleItem(page, moduleName, moduleItemName) {
-  const leftSideContainer = page.locator('#left-side #coursepage-left-side-view');
+  const leftSideContainer = page.locator(
+    "#left-side #coursepage-left-side-view",
+  );
+
+  await leftSideContainer.waitFor({ state: "visible", timeout: 15_000 });
+
   const moduleToggle = leftSideContainer.locator(
     `.module-package__title h4 span.title:has-text("${moduleName}")`,
   );
   const moduleContent = moduleToggle
     .locator('xpath=ancestor::div[contains(@class, "courses__treeview__item")]')
-    .locator('.module-package__child-nodes');
+    .locator(".module-package__child-nodes");
 
   if (!(await moduleContent.isVisible())) {
-    await moduleToggle.click();
-    await moduleContent.waitFor({ state: 'visible' });
+    await moduleToggle.click({ timeout: 10_000 });
+    await moduleContent.waitFor({ state: "visible", timeout: 10_000 });
   }
 
   const moduleContentItem = moduleContent.locator(
     `.tree-node__label__text a:has-text("${moduleItemName}")`,
   );
-  await moduleContentItem.click();
-  await page
+  await moduleContentItem.click({ timeout: 5_000 });
+
+  // Success: title appears in ~250ms. 5s catches slow staging; retry re-queries
+  // the sidebar on the current page since the first click may have navigated.
+  const titleReady = await page
     .locator(`h1.page-title:has-text("${moduleItemName}")`)
-    .waitFor({ state: 'visible', timeout: 30_000 });
+    .waitFor({ state: "visible", timeout: 5_000 })
+    .then(
+      () => true,
+      () => false,
+    );
+  if (!titleReady) {
+    const retryLink = page
+      .locator("#left-side #coursepage-left-side-view")
+      .locator(`.tree-node__label__text a:has-text("${moduleItemName}")`);
+    await retryLink.click({ timeout: 5_000 });
+    await page
+      .locator(`h1.page-title:has-text("${moduleItemName}")`)
+      .waitFor({ state: "visible", timeout: 5_000 });
+  }
 }
 
 /**
@@ -135,7 +163,7 @@ export async function openModuleItem(page, moduleName, moduleItemName) {
  * @returns {string}
  */
 export function getLtiModuleName() {
-  return getEnv() === 'production' ? '3. LTI (production)' : '2. LTI (stage)';
+  return getEnv() === "production" ? "3. LTI (production)" : "2. LTI (stage)";
 }
 
 /**
@@ -143,5 +171,5 @@ export function getLtiModuleName() {
  * @returns {number}
  */
 export function getLtiModuleIndex() {
-  return getEnv() === 'production' ? 3 : 2;
+  return getEnv() === "production" ? 3 : 2;
 }

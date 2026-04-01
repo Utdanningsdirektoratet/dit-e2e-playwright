@@ -8,11 +8,11 @@
 export const PAGE_REQUIREMENTS = [
   {
     match: /^\/(nn\/)?filmoversikt\/$/,
-    require: ['filter'],
+    require: ["filter"],
   },
   {
     match: /^\/(nn\/)?tema\/(mellomtrinn|ungdom)\/[^/]+\/$/,
-    require: ['slider', 'accordion', 'anchorMenu'],
+    require: ["slider", "accordion", "anchorMenu"],
   },
   // NOTE: not all /larer/ pages have accordions — auto-detection handles it
 ];

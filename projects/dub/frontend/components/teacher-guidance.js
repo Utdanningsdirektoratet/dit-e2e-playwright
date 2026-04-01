@@ -2,9 +2,9 @@
 // Teacher pages (/larer/…) contain a .teacher-guidance-information section
 // with .block content blocks that typically include button/link groups.
 // Auto-detected — not all larer pages have this section.
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 
-const CONTAINER = '.teacher-guidance-information';
+const CONTAINER = ".teacher-guidance-information";
 const BLOCK = `${CONTAINER} .block`;
 
 export async function detect(page) {
@@ -23,9 +23,9 @@ export async function test(page) {
   await expect(visibleBlocks.first()).toBeVisible();
 
   // If button/link blocks are present, verify they have valid hrefs
-  const blockLinks = visibleBlocks.locator('a[href]');
+  const blockLinks = visibleBlocks.locator("a[href]");
   if ((await blockLinks.count()) > 0) {
-    const href = await blockLinks.first().getAttribute('href');
-    expect(href, 'Block link should have a non-empty href').toBeTruthy();
+    const href = await blockLinks.first().getAttribute("href");
+    expect(href, "Block link should have a non-empty href").toBeTruthy();
   }
 }

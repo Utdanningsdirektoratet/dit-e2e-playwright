@@ -13,7 +13,7 @@
  * @returns {boolean}
  */
 export function isCanvasStage(canvasBaseURL) {
-  return canvasBaseURL.includes('.test.');
+  return canvasBaseURL.includes(".test.");
 }
 
 /**
@@ -28,23 +28,26 @@ export function isCanvasStage(canvasBaseURL) {
  * @param {boolean} expectStage — true if expecting stage styling, false for production
  */
 export async function assertCanvasStageStyling(headerLocator, expectStage) {
-  const { expect } = await import('@playwright/test');
+  const { expect } = await import("@playwright/test");
 
-  const hasStageClass = await headerLocator.evaluate((el) => el.classList.contains('stage'));
+  const hasStageClass = await headerLocator.evaluate((el) =>
+    el.classList.contains("stage"),
+  );
   const hasStageBanner = await headerLocator
     .locator('.stage-banner:has-text("stage")')
     .isVisible()
     .catch(() => false);
 
-  // eslint-disable-next-line no-undef -- runs inside evaluate() (browser context)
-  const bgColor = await headerLocator.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+  const bgColor = await headerLocator.evaluate(
+    (el) => window.getComputedStyle(el).backgroundColor,
+  );
 
   const rgbToHex = (rgb) => {
     const result = rgb.match(/\d+/g)?.map(Number);
-    return `#${result?.map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+    return `#${result?.map((x) => x.toString(16).padStart(2, "0")).join("")}`;
   };
 
   expect(hasStageClass).toBe(expectStage);
   expect(hasStageBanner).toBe(expectStage);
-  expect(rgbToHex(bgColor)).toBe(expectStage ? '#bed5e8' : '#ffffff');
+  expect(rgbToHex(bgColor)).toBe(expectStage ? "#bed5e8" : "#ffffff");
 }

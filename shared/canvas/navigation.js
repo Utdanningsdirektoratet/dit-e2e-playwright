@@ -16,14 +16,16 @@
  * @param {import('@playwright/test').Locator} headerLocator
  */
 export async function assertCanvasHeaderUnauthenticated(headerLocator) {
-  const { expect } = await import('@playwright/test');
+  const { expect } = await import("@playwright/test");
 
-  const links = headerLocator.locator('.header__link-list > .header__list-item a.header__link');
-  const subNavBar = headerLocator.locator('.nav-bar-container');
+  const links = headerLocator.locator(
+    ".header__link-list > .header__list-item a.header__link",
+  );
+  const subNavBar = headerLocator.locator(".nav-bar-container");
 
   await expect(links).toHaveCount(1);
   const linkText = await links.first().textContent();
-  expect(linkText).toContain('Logg inn');
+  expect(linkText).toContain("Logg inn");
   await expect(subNavBar).not.toBeVisible();
 }
 
@@ -37,22 +39,24 @@ export async function assertCanvasHeaderUnauthenticated(headerLocator) {
  * @param {import('@playwright/test').Locator} headerLocator
  */
 export async function assertCanvasHeaderAuthenticated(headerLocator) {
-  const { expect } = await import('@playwright/test');
+  const { expect } = await import("@playwright/test");
 
-  const links = headerLocator.locator('.header__link-list > .header__list-item a.header__link');
-  const subNavBar = headerLocator.locator('.nav-bar-container');
+  const links = headerLocator.locator(
+    ".header__link-list > .header__list-item a.header__link",
+  );
+  const subNavBar = headerLocator.locator(".nav-bar-container");
 
   const linkCount = await links.count();
   expect(linkCount).toBeGreaterThanOrEqual(2);
 
   // Both action links are present
-  for (const text of ['Innstillinger', 'Logg ut']) {
+  for (const text of ["Innstillinger", "Logg ut"]) {
     const match = links.filter({ hasText: text });
     await expect(match.first()).toBeVisible();
   }
 
   // Sub-nav bar shows My Courses + All Courses
   await expect(subNavBar).toBeVisible();
-  const subLinks = subNavBar.locator('.nav-bar__link');
+  const subLinks = subNavBar.locator(".nav-bar__link");
   await expect(subLinks).toHaveCount(2);
 }

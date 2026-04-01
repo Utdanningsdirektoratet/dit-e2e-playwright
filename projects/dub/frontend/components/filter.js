@@ -7,13 +7,13 @@
  * NOTE: .radio__checkcircle is the LANGUAGE SELECTOR (removed from DOM on load),
  * NOT the film filter. Don't use it.
  */
-import { expect } from '@playwright/test';
+import { expect } from "@playwright/test";
 
-const CONTAINER = '.videopage-filter-wrapper';
-const DROPDOWN_TOGGLE = 'button.item-toggle';
-const OPTION = 'label.custom-radio-button-label';
-const FILM_ITEM = '.single-video-wrapper';
-const FILTER_TAG = '.filtertag-wrapper';
+const CONTAINER = ".videopage-filter-wrapper";
+const DROPDOWN_TOGGLE = "button.item-toggle";
+const OPTION = "label.custom-radio-button-label";
+const FILM_ITEM = ".single-video-wrapper";
+const FILTER_TAG = ".filtertag-wrapper";
 
 export async function detect(page) {
   return (await page.locator(CONTAINER).count()) > 0;
