@@ -8,7 +8,7 @@
  * so unauthenticated tests still run without any env setup.
  *
  * Env vars (set in .env or CI secrets):
- *   KOMP_CANVAS_CHROMIUM_USERNAME / KOMP_CANVAS_CHROMIUM_PASSWORD
+ *   TEST_KOMP_CHROMIUM_USERNAME / TEST_KOMP_CHROMIUM_PASSWORD
  *
  * @see shared/canvas/auth.js
  */
@@ -18,8 +18,8 @@ import { loginCanvasForm, logoutCanvas } from "../../../shared/canvas/auth.js";
 
 function resolveCredentials() {
   return {
-    username: process.env.KOMP_CANVAS_CHROMIUM_USERNAME ?? "",
-    password: process.env.KOMP_CANVAS_CHROMIUM_PASSWORD ?? "",
+    username: process.env.TEST_KOMP_CHROMIUM_USERNAME ?? "",
+    password: process.env.TEST_KOMP_CHROMIUM_PASSWORD ?? "",
   };
 }
 

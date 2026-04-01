@@ -11,7 +11,7 @@
  *   the project directory, not this shared module. Passing import.meta.dirname
  *   from the project's env.js keeps the path resolution correct.
  *
- * APP_ENV selects the environment (default: "production").
+ * TEST_ENV selects the environment (default: "production").
  * "development" is normalised to "local" so local dev servers work without config changes.
  *
  * @param {string} dirname  Directory containing config.json — pass import.meta.dirname
@@ -25,13 +25,13 @@ export function createEnv(dirname) {
     readFileSync(join(dirname, "config.json"), "utf-8"),
   );
 
-  let envName = process.env.APP_ENV || "production";
+  let envName = process.env.TEST_ENV || "production";
   if (envName === "development") envName = "local";
 
   const env = config.environments[envName];
   if (!env) {
     throw new Error(
-      `Unknown APP_ENV="${process.env.APP_ENV}". Available: ${Object.keys(config.environments).join(", ")}`,
+      `Unknown TEST_ENV="${process.env.TEST_ENV}". Available: ${Object.keys(config.environments).join(", ")}`,
     );
   }
 

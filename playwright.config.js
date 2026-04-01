@@ -113,7 +113,7 @@ function loadJson(path) {
  * Legacy format (backwards-compatible):
  *   { "use": { "baseURL": "…" } }
  *
- * APP_ENV selects the environment (defaults to "production").
+ * TEST_ENV selects the environment (defaults to "production").
  * "development" is normalised to "local" so local dev servers work out of the box.
  * Each environment may define: baseURL, sitemapUrl, ignoreHTTPSErrors.
  *
@@ -122,15 +122,15 @@ function loadJson(path) {
  */
 function resolveConfig(raw) {
   if (raw.environments) {
-    // Normalise APP_ENV: "development" is an alias for "local"
-    let envName = process.env.APP_ENV || "production";
+    // Normalise TEST_ENV: "development" is an alias for "local"
+    let envName = process.env.TEST_ENV || "production";
     if (envName === "development") envName = "local";
 
     const env = raw.environments[envName];
     if (!env) {
       const available = Object.keys(raw.environments).join(", ");
       throw new Error(
-        `Unknown APP_ENV="${process.env.APP_ENV}". Available: ${available}`,
+        `Unknown TEST_ENV="${process.env.TEST_ENV}". Available: ${available}`,
       );
     }
 

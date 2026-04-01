@@ -9,8 +9,8 @@
 #
 # ── Basic usage ────────────────────────────────────────────────────────────────
 #   make test                                           Run everything (prod)
-#   make test APP_ENV=stage                             Run against staging
-#   make test APP_ENV=local                             Run against localhost
+#   make test TEST_ENV=stage                             Run against staging
+#   make test TEST_ENV=local                             Run against localhost
 #
 # ── Filtering ──────────────────────────────────────────────────────────────────
 #   make test FILTER='dub-*'                            All DUB services
@@ -39,14 +39,14 @@
 #   make test FILTER='dub-*' WORKERS=4                 Run with 4 workers
 #
 # ── CI ─────────────────────────────────────────────────────────────────────────
-#   CI=1 make test APP_ENV=stage FILTER='dub-frontend-*'   CI mode (retries + JSON report)
+#   CI=1 make test TEST_ENV=stage FILTER='dub-frontend-*'   CI mode (retries + JSON report)
 
 .DEFAULT_GOAL := help
 
 PLAYWRIGHT := pnpm exec playwright test
 
 # ── Environment ────────────────────────────────────────────────────────────────
-export APP_ENV ?=
+export TEST_ENV ?=
 
 # ── Options ────────────────────────────────────────────────────────────────────
 FILTER  ?=   # project glob, e.g. 'dub-frontend-*'
@@ -84,7 +84,7 @@ install: ## Install dependencies and Playwright browsers
 	pnpm exec playwright install --with-deps
 
 .PHONY: test
-test: ## Run tests. Options: APP_ENV= FILTER= HEADED=1 DEBUG=1 UI=1 TRACE=1 WORKERS= CI=1
+test: ## Run tests. Options: TEST_ENV= FILTER= HEADED=1 DEBUG=1 UI=1 TRACE=1 WORKERS= CI=1
 ifdef UI
 	$(PLAYWRIGHT) --ui $(_FLAGS)
 else
@@ -92,19 +92,19 @@ else
 endif
 
 .PHONY: ui
-ui: ## Open Playwright UI mode (interactive, time-travel debugging). Accepts FILTER= WORKERS= APP_ENV=
+ui: ## Open Playwright UI mode (interactive, time-travel debugging). Accepts FILTER= WORKERS= TEST_ENV=
 	$(PLAYWRIGHT) --ui $(if $(FILTER),--project='$(FILTER)',) $(if $(WORKERS),--workers=$(WORKERS),)
 
 .PHONY: debug
-debug: ## Open Playwright Inspector (headed, 1 worker, no timeout). Accepts FILTER= APP_ENV=
+debug: ## Open Playwright Inspector (headed, 1 worker, no timeout). Accepts FILTER= TEST_ENV=
 	$(PLAYWRIGHT) --debug --headed --workers=1 --timeout=0 $(if $(FILTER),--project='$(FILTER)',)
 
 .PHONY: headed
-headed: ## Run tests with visible browser window. Accepts FILTER= APP_ENV= WORKERS= TRACE=1
+headed: ## Run tests with visible browser window. Accepts FILTER= TEST_ENV= WORKERS= TRACE=1
 	$(PLAYWRIGHT) --headed $(if $(FILTER),--project='$(FILTER)',) $(if $(WORKERS),--workers=$(WORKERS),) $(if $(TRACE),--trace=on,)
 
 .PHONY: trace
-trace: ## Run tests and record a trace for every test. Accepts FILTER= APP_ENV= WORKERS=
+trace: ## Run tests and record a trace for every test. Accepts FILTER= TEST_ENV= WORKERS=
 	$(PLAYWRIGHT) --trace=on $(if $(FILTER),--project='$(FILTER)',) $(if $(WORKERS),--workers=$(WORKERS),)
 
 .PHONY: codegen
