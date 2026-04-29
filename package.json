@@ -16,12 +16,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.58.2",
-    "eslint": "^10.1.0",
-    "globals": "^17.4.0",
+    "@playwright/test": "^1.59.1",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
-    "undici": "^7.24.0"
+    "undici": "^7.25.0"
   },
   "lint-staged": {
     "*.js": "eslint --fix"

@@ -209,7 +209,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 1,
-  workers: 9,
+  workers: 6,
   reporter: process.env.CI
     ? [
         ["html", { open: "never" }],

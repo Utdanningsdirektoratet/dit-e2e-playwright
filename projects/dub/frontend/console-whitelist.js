@@ -37,6 +37,8 @@ export const CONSOLE_WHITELIST = [
   // ── Chromium-specific ─────────────────────────────────────────────────────
   /WebGPU/i, // WebGPU fallback in headless
   /WebGL/i, // WebGL fallback in headless
+  /Failed to parse (audio|video) contentType/i, // Video player codec capability probing
+  /Invalid \(ambiguous\) video codec string/i, // Video player codec capability probing
 
   // ── WebKit-specific ───────────────────────────────────────────────────────
   /Importing a module script failed/i, // Module fetch failure (CDN/TLS)
@@ -57,4 +59,5 @@ export const CONSOLE_WHITELIST = [
   /jQuery is not defined/i, // Old pages with broken jQuery CDN deps
   /\$ is not defined/i, // jQuery alias ($) missing after failed load
   /Microsoft is not defined/i, // Legacy Microsoft JS SDK on old Optimizely pages
+  /Quirks Mode.*about:blank/i, // Blank iframe warning (video player init, analytics frames)
 ];
