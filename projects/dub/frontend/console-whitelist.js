@@ -15,7 +15,11 @@ export const CONSOLE_WHITELIST = [
   /XMLHttpRequestProgressEvent/, // GoBrain XHR failure companion
   /ip-only\.net/i, // Qbrick subtitle CDN (TLS failures on WebKit)
   /vimeocdn/i, // Vimeo HLS playlist fetch failures
+  /player\.vimeo\.com/i, // Vimeo player iframe noise (CORP, PerformanceObserver, init quirks)
   /No available adapters/i, // HLS.js codec not supported in headless
+  /f\.common\.mediaPlayer is undefined/i, // GoBrain init race: player accessed before ready
+  /f\.sandbox\.Dom\.getNodeByGoBrainId/i, // GoBrain init race: DOM node not yet registered
+  /getNodeByClass.*c is null/i, // GoBrain init race: container not yet available
 
   // ── Cloudflare ────────────────────────────────────────────────────────────
   /cloudflare turnstile/i, // Turnstile widget noise
@@ -52,7 +56,6 @@ export const CONSOLE_WHITELIST = [
   /Image corrupt or truncated/i, // Image decode race in headless
   /Layout was forced before the page was fully loaded/i, // FOUC warning
   /Feature Policy:.*Skipping unsupported feature/i, // Unsupported iframe attrs
-  /unreachable code after return statement/i, // Vimeo minified bundle warning
   /NS_ERROR_ABORT/i, // Sporadic navigation abort
   /NetworkError when attempting to fetch/i, // CDN timeout / TLS renegotiation
   /classified as a bounce tracker/i, // Enhanced Tracking Protection noise
