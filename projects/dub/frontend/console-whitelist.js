@@ -21,6 +21,7 @@ export const CONSOLE_WHITELIST = [
   /undefined is not an object \(evaluating 'f\.common\.mediaPlayer/i, // GoBrain init race (WebKit phrasing)
   /f\.sandbox\.Dom\.getNodeByGoBrainId/i, // GoBrain init race: DOM node not yet registered
   /getNodeByClass.*c is null/i, // GoBrain init race: container not yet available
+  /addClass.*h is null/i, // GoBrain init race: target element not yet in DOM (h variable)
 
   // ── Cloudflare ────────────────────────────────────────────────────────────
   /cloudflare turnstile/i, // Turnstile widget noise

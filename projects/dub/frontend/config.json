@@ -28,6 +28,7 @@
     "^/(nn/)?foreldre_test/",
     "^/(nn/)?foreldre2/",
     "^/(nn/)?larer/foreldre/",
-    "^/(nn/)?foreldre/tema/"
+    "^/(nn/)?foreldre/tema/",
+    "^/(nn/)?filmoversikt/$"
   ]
 }
