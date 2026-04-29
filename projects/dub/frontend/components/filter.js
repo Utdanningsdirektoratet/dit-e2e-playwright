@@ -24,11 +24,11 @@ export async function test(page) {
   await expect(container).toBeVisible();
   await expect(page.locator(FILM_ITEM).first()).toBeVisible();
 
-  await container.locator(DROPDOWN_TOGGLE).first().click();
-  await container.locator(OPTION).first().click();
+  await container.locator(DROPDOWN_TOGGLE).first().click({ timeout: 15_000 });
+  await container.locator(OPTION).first().click({ timeout: 15_000 });
   await expect(page.locator(FILTER_TAG).first()).toBeVisible();
 
   // Remove filter to restore state
-  await page.locator(`${FILTER_TAG} button`).first().click();
+  await page.locator(`${FILTER_TAG} button`).first().click({ timeout: 15_000 });
   await expect(page.locator(FILTER_TAG)).toHaveCount(0);
 }

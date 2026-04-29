@@ -17,7 +17,8 @@ export const CONSOLE_WHITELIST = [
   /vimeocdn/i, // Vimeo HLS playlist fetch failures
   /player\.vimeo\.com/i, // Vimeo player iframe noise (CORP, PerformanceObserver, init quirks)
   /No available adapters/i, // HLS.js codec not supported in headless
-  /f\.common\.mediaPlayer is undefined/i, // GoBrain init race: player accessed before ready
+  /f\.common\.mediaPlayer is undefined/i, // GoBrain init race: player accessed before ready (Firefox phrasing)
+  /undefined is not an object \(evaluating 'f\.common\.mediaPlayer/i, // GoBrain init race (WebKit phrasing)
   /f\.sandbox\.Dom\.getNodeByGoBrainId/i, // GoBrain init race: DOM node not yet registered
   /getNodeByClass.*c is null/i, // GoBrain init race: container not yet available
 
