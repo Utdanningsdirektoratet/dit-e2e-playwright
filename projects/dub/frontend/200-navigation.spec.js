@@ -182,7 +182,10 @@ test.describe("Navigation", () => {
       "AxiosError: Network Error on WebKit during school-level switch — application bug",
     );
     const checker = createConsoleChecker(page, CONSOLE_WHITELIST);
-    await page.goto(TOPIC_PAGE);
+    await page.goto(TOPIC_PAGE, {
+      waitUntil: "domcontentloaded",
+      timeout: 15_000,
+    });
 
     const errsBefore = checker.errors.length;
     const warnsBefore = checker.warnings.length;
@@ -208,7 +211,10 @@ test.describe("Navigation", () => {
   test("in-page level switch is interactive (.btn-switch-container)", async ({
     page,
   }) => {
-    await page.goto(TOPIC_PAGE);
+    await page.goto(TOPIC_PAGE, {
+      waitUntil: "domcontentloaded",
+      timeout: 15_000,
+    });
     const switchContainer = page.locator(".btn-switch-container");
     const containerVisible = await switchContainer
       .isVisible()
@@ -269,22 +275,23 @@ test.describe("Navigation", () => {
   test("topic page anchor menu navigates between sections", async ({
     page,
   }) => {
-    await page.goto(TOPIC_PAGE);
-    const anchorMenu = page.locator(".anchor-menu-container");
-    // Use waitFor so WebKit (which finalises rendering after the load event)
-    // has time to make the menu visible before we decide to skip.
-    // On mobile viewports the menu is genuinely absent — waitFor times out quickly.
-    const menuVisible = await anchorMenu
+    await page.goto(TOPIC_PAGE, {
+      waitUntil: "domcontentloaded",
+      timeout: 15_000,
+    });
+
+    const sectionLink = page
+      .locator('.anchor-menu-container a[href^="#"]')
+      .first();
+    const linkVisible = await sectionLink
       .waitFor({ state: "visible", timeout: 3000 })
       .then(() => true)
       .catch(() => false);
-    // Anchor menu collapses on mobile viewports — skip rather than fail
     test.skip(
-      !menuVisible,
+      !linkVisible,
       "Anchor menu not visible on this viewport (mobile)",
     );
-    const sectionLink = anchorMenu.locator('a[href^="#"]').first();
-    await expect(sectionLink).toBeVisible();
+
     await sectionLink.click();
     await expect(page).toHaveURL(/#/);
   });

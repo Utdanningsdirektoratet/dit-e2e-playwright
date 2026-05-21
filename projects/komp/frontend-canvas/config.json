@@ -14,6 +14,9 @@
     }
   },
   "deviceFilter": ["desktop-chromium"],
+  "use": {
+    "permissions": ["local-network-access"]
+  },
   "fullyParallel": true,
   "retries": 1,
   "workers": 4,

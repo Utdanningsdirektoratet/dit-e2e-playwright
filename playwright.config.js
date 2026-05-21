@@ -144,11 +144,12 @@ function resolveConfig(raw) {
 
     // Strip meta fields that are not Playwright project options
     const { environments: _e, deviceFilter: _d, ...playwrightOptions } = raw;
+    const useOverrides = playwrightOptions?.use || {};
 
     return {
       ...playwrightOptions, // fullyParallel, retries, timeout, expect, …
       ...envRest, // env-specific extras (e.g. canvasBaseURL)
-      use: { baseURL },
+      use: { baseURL, ...useOverrides },
       ...(ignoreHTTPSErrors ? { _ignoreHTTPSErrors: true } : {}),
     };
   }
@@ -222,8 +223,6 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
-
-    permissions: ["local-network-access"],
   },
 
   projects: discoverProjects(),
