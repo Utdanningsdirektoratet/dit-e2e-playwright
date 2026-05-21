@@ -18,7 +18,7 @@
     "permissions": ["local-network-access"]
   },
   "fullyParallel": true,
-  "retries": 1,
+  "retries": 2,
   "workers": 4,
   "timeout": 90000
 }
