@@ -4,12 +4,19 @@
  * Tests the komp frontpage as a guest visitor:
  *  - Stage banner and nav links reflect the unauthenticated state
  *  - Cards display correctly (new tag, filters)
+ *  - The enroll flow surfaces the registration form for new users
+ *  - The enroll flow offers Feide login and hands off to the Feide IdP
  *  - Login/logout flow works with basic auth
  */
 import { test, expect } from "@playwright/test";
 import { loginWithBasicAuth, logout, hasCredentials } from "./auth.js";
 import { routeToFrontpage } from "./routes.js";
-import { assertStageBanner, assertNavLinks, useLocalTheme } from "./helpers.js";
+import {
+  assertStageBanner,
+  assertNavLinks,
+  openEnrollLoginModal,
+  useLocalTheme,
+} from "./helpers.js";
 
 test.use({ viewport: { width: 1920, height: 1080 } });
 
@@ -82,6 +89,40 @@ test.describe("Unauthenticated | Canvas", () => {
       .click();
     const resetCount = await cardContainer.locator(".card-instance").count();
     expect(resetCount).toBe(totalBefore);
+  });
+
+  test("enroll flow shows registration form for new users", async ({
+    page,
+  }) => {
+    test.setTimeout(45_000);
+    const modalPopup = await openEnrollLoginModal(page);
+
+    await modalPopup.locator('button:has-text("Canvas pålogging")').click();
+    await page.waitForURL(/\/enroll\//, { timeout: 15_000 });
+    expect(page.url()).toContain("/enroll/");
+
+    await page.locator('label:has-text("Jeg er en ny bruker")').click();
+    await page
+      .locator(
+        '.ic-Self-enrollment-footer button:has-text("Registrere deg i emnet")',
+      )
+      .waitFor({ state: "visible", timeout: 10_000 });
+  });
+
+  test("enroll flow Feide login redirects to Feide IdP", async ({ page }) => {
+    test.setTimeout(45_000);
+    const modalPopup = await openEnrollLoginModal(page);
+
+    const feideButton = modalPopup.locator(
+      'button:has-text("Feide pålogging")',
+    );
+    await expect(feideButton).toBeVisible();
+    await feideButton.click();
+
+    await page.waitForURL(/idp\.feide\.no/, { timeout: 15_000 });
+    expect(page.url()).toContain("idp.feide.no");
+
+    await expect(page.locator("#selectorg_button")).toBeVisible();
   });
 
   test("login and logout with basic auth", async ({ browser }) => {

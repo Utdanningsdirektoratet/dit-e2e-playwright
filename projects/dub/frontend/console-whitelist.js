@@ -28,6 +28,9 @@ export const CONSOLE_WHITELIST = [
   /charCodeAt/, // Obfuscated Turnstile JS error
   /font-size:0;color:transparent/, // Turnstile debug render log
   /challenges\.cloudflare\.com/i, // Challenge platform cross-frame errors
+  /require-trusted-types-for/i, // Turnstile not Trusted-Types compliant vs page CSP (WebKit phrasing)
+  /requires '(TrustedHTML|TrustedScript|TrustedScriptURL)' assignment/i, // same, Chromium phrasing
+  /Form submission canceled because the form is not connected/i, // Turnstile detached-form submit (flaky)
 
   // ── Network & resource loading ────────────────────────────────────────────
   /favicon\.ico/i, // Missing favicon
@@ -39,6 +42,8 @@ export const CONSOLE_WHITELIST = [
   // ── CSP & permissions ─────────────────────────────────────────────────────
   /default-src.*fallback/i, // CSP fallback notice
   /permissions policy violation/i, // Iframe permissions policy
+  /Executing inline script violates the following Content Security Policy/i, // Inline script in 3rd-party player srcdoc iframe (Qbrick/Vimeo) — Chromium
+  /Refused to execute a script because its hash, its nonce/i, // same — WebKit phrasing
 
   // ── Chromium-specific ─────────────────────────────────────────────────────
   /WebGPU/i, // WebGPU fallback in headless

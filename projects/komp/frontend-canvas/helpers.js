@@ -10,6 +10,7 @@
  */
 import { test } from "@playwright/test";
 import { canvasBaseURL } from "./env.js";
+import { routeToFrontpage } from "./routes.js";
 import {
   isCanvasStage,
   assertCanvasStageStyling,
@@ -75,6 +76,26 @@ export async function modalClose(modalElement) {
   const closeButton = modalElement.locator("button.icon-button");
   await closeButton.click({ timeout: 10_000 });
   await modalElement.waitFor({ state: "hidden", timeout: 10_000 });
+}
+
+/**
+ * Open the guest login modal from a course card.
+ *
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<import('@playwright/test').Locator>} the visible modal popup
+ */
+export async function openEnrollLoginModal(page) {
+  await routeToFrontpage(page, false);
+  const cardContainer = page.locator(
+    ".not-logged-in-page--layout .card-container",
+  );
+  await cardContainer
+    .locator('.card-instance button.btn:has-text("Meld deg på")')
+    .first()
+    .click();
+  const modalPopup = page.locator(".modal-box");
+  await modalPopup.waitFor({ state: "visible", timeout: 10_000 });
+  return modalPopup;
 }
 
 /**
