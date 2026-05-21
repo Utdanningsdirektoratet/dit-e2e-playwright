@@ -58,7 +58,7 @@ export function useLocalTheme() {
  * @returns {'stage' | 'production'}
  */
 export function getEnv() {
-  let env = process.env.TEST_ENV ?? "production";
+  let env = process.env.TEST_ENV || "production";
   if (env === "local" || env === "development") env = "stage";
   return env;
 }

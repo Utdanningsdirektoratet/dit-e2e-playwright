@@ -18,8 +18,8 @@ import { loginCanvasForm, logoutCanvas } from "../../../shared/canvas/auth.js";
 
 function resolveCredentials() {
   return {
-    username: process.env.TEST_KOMP_CHROMIUM_USERNAME ?? "",
-    password: process.env.TEST_KOMP_CHROMIUM_PASSWORD ?? "",
+    username: process.env.TEST_KOMP_CHROMIUM_USERNAME || "",
+    password: process.env.TEST_KOMP_CHROMIUM_PASSWORD || "",
   };
 }
 
