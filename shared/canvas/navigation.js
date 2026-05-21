@@ -19,7 +19,7 @@ export async function assertCanvasHeaderUnauthenticated(headerLocator) {
   const { expect } = await import("@playwright/test");
 
   const links = headerLocator.locator(
-    ".header__link-list > .header__list-item a.header__link",
+    ".header__link-list .login-button:has-text('Logg inn')",
   );
   const subNavBar = headerLocator.locator(".nav-bar-container");
 

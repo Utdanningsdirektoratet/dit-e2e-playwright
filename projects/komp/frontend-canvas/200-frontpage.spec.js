@@ -262,7 +262,7 @@ test.describe("Frontpage | Canvas", () => {
     expect(filteredCount).toBeLessThanOrEqual(totalBefore);
 
     await page
-      .locator('.filter-container button:has-text("Tilbakestill filter")')
+      .locator('.filter-container button:has-text("Tilbakestill")')
       .click();
     const resetCount = await cardContainer.locator(".card-instance").count();
     expect(resetCount).toBe(totalBefore);

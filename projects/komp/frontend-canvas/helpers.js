@@ -29,9 +29,14 @@ import {
  * Call this inside a test.describe() block alongside useDesktopViewport().
  */
 export function useLocalTheme() {
+  const isTestEnvLocal = process.env.TEST_ENV === "local";
+  const useLocalThemeFlag =
+    process.env.KOMP_CANVAS_LOCAL_THEME || process.env.TEST_CANVAS_LOCAL_THEME;
+
   const isEnabled =
-    process.env.KOMP_CANVAS_LOCAL_THEME === "true" ||
-    process.env.TEST_CANVAS_LOCAL_THEME === "true";
+    useLocalThemeFlag !== undefined
+      ? useLocalThemeFlag?.toLowerCase() === "true"
+      : isTestEnvLocal;
 
   if (isEnabled) {
     test.beforeEach(async ({ context }) => {
