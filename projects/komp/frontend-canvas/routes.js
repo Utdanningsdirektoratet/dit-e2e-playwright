@@ -44,7 +44,7 @@ export async function routeToFrontpage(page, loggedIn) {
   );
   const heading = page.locator(
     !loggedIn
-      ? '#notLoggedInPage h1:has-text("Velkommen til Kompetanseportalen!")'
+      ? '#notLoggedInPage h1:has-text("Velkommen til Utdanningsdirektoratets kompetanseportal!"), #notLoggedInPage h1:has-text("Velkommen til Kompetanseportalen!")'
       : '#loggedInLandingPage h1:has-text("Alle tilgjengelige kompetansepakker")',
   );
   // Success: heading appears in <100ms after networkidle.
