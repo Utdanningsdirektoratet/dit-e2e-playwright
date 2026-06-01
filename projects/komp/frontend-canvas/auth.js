@@ -57,12 +57,12 @@ export async function loginWithBasicAuth(page) {
   try {
     await page.goto(confirmUrl, { waitUntil: "domcontentloaded" });
   } catch {
-    await page.waitForTimeout(2_000);
+    await page.waitForTimeout(10_000);
     await page.goto(confirmUrl, { waitUntil: "domcontentloaded" });
   }
   await page
     .locator(".header__link", { hasText: "Logg ut" })
-    .waitFor({ state: "visible", timeout: 5_000 });
+    .waitFor({ state: "visible", timeout: 10_000 });
 }
 
 export async function logout(page) {
